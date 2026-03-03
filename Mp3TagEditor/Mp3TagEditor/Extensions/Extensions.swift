@@ -147,3 +147,49 @@ extension View {
         self.modifier(DeviceShakeViewModifier(action: action))
     }
 }
+
+// MARK: - Premium UI Helpers
+struct AmbientBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: colorScheme == .dark
+                    ? [Color.black, Color(hex: "#101224") ?? .black, Color(hex: "#1A1030") ?? .black]
+                    : [Color(hex: "#F7F9FF") ?? .white, Color(hex: "#EDF4FF") ?? .white, Color(hex: "#F9F0FF") ?? .white],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            Circle()
+                .fill((Color(hex: "#5E7BFF") ?? .blue).opacity(colorScheme == .dark ? 0.26 : 0.18))
+                .frame(width: 320, height: 320)
+                .blur(radius: 70)
+                .offset(x: -150, y: -220)
+
+            Circle()
+                .fill((Color(hex: "#D96DFF") ?? .purple).opacity(colorScheme == .dark ? 0.22 : 0.14))
+                .frame(width: 280, height: 280)
+                .blur(radius: 65)
+                .offset(x: 170, y: -120)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+extension View {
+    func appAmbientBackground() -> some View {
+        self.background(AmbientBackground())
+    }
+
+    func glassCard(cornerRadius: CGFloat = 18) -> some View {
+        self
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(.white.opacity(0.18), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
+    }
+}

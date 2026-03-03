@@ -145,6 +145,7 @@ enum BatchEditField: String, CaseIterable, Identifiable {
 enum ImportSource: String, CaseIterable, Identifiable {
     case files = "Files"
     case folder = "Folder"
+    case wifiUpload = "Wi-Fi Upload"
     
     var id: String { rawValue }
     
@@ -152,6 +153,7 @@ enum ImportSource: String, CaseIterable, Identifiable {
         switch self {
         case .files: return "doc.badge.plus"
         case .folder: return "folder.badge.plus"
+        case .wifiUpload: return "wifi"
         }
     }
     
@@ -159,6 +161,7 @@ enum ImportSource: String, CaseIterable, Identifiable {
         switch self {
         case .files: return "Import individual MP3 files"
         case .folder: return "Import all MP3 files from a folder"
+        case .wifiUpload: return "Upload MP3 files from browser on same network"
         }
     }
 }

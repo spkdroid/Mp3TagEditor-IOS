@@ -63,10 +63,15 @@ struct MiniPlayerView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
         }
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.15), radius: 8, y: -2)
-        .padding(.horizontal, 8)
+        .background(
+            LinearGradient(
+                colors: [.white.opacity(0.15), .white.opacity(0.06)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .glassCard(cornerRadius: 18)
+        .padding(.horizontal, 10)
         .onTapGesture {
             showingFullPlayer = true
         }

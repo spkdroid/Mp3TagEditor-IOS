@@ -12,6 +12,8 @@ struct LibraryView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                AmbientBackground()
+
                 if libraryVM.files.isEmpty && !libraryVM.isLoading {
                     emptyStateView
                 } else {
@@ -27,6 +29,10 @@ struct LibraryView: View {
             .toolbar { toolbarContent }
             .sheet(isPresented: $showingImportSheet) {
                 ImportOptionsView()
+                    .environmentObject(libraryVM)
+            }
+            .sheet(isPresented: $libraryVM.showingWebUpload) {
+                WebUploadView()
                     .environmentObject(libraryVM)
             }
             .sheet(isPresented: $libraryVM.showingFilterSheet) {
@@ -71,7 +77,7 @@ struct LibraryView: View {
         VStack(spacing: 24) {
             Image(systemName: "music.note.list")
                 .font(.system(size: 72))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.tint)
             
             VStack(spacing: 8) {
                 Text("No MP3 Files")
@@ -94,7 +100,9 @@ struct LibraryView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
         }
-        .padding()
+        .padding(24)
+        .glassCard(cornerRadius: 24)
+        .padding(.horizontal, 20)
     }
     
     // MARK: - File List
@@ -143,6 +151,8 @@ struct LibraryView: View {
             }
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.clear)
         .navigationDestination(for: MP3File.self) { file in
             TagEditorView(file: file)
                 .environmentObject(libraryVM)
@@ -176,6 +186,7 @@ struct LibraryView: View {
                 color: .green
             )
         }
+        .padding(.vertical, 4)
         .onTapGesture {
             showingStats = true
         }
@@ -333,7 +344,18 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .background(
+            LinearGradient(
+                colors: [color.opacity(0.22), color.opacity(0.08)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(.white.opacity(0.16), lineWidth: 1)
+        )
     }
 }
 

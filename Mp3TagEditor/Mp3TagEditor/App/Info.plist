@@ -72,5 +72,7 @@
     <string>MP3 Tag Editor needs access to your photos to set album artwork.</string>
     <key>NSAppleMusicUsageDescription</key>
     <string>MP3 Tag Editor needs access to your music library to edit tags.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>MP3 Tag Editor uses your local network to receive MP3 uploads from a browser over Wi-Fi.</string>
 </dict>
 </plist>

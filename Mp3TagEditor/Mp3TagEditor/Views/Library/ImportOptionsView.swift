@@ -4,6 +4,7 @@ import SwiftUI
 struct ImportOptionsView: View {
     @EnvironmentObject private var libraryVM: LibraryViewModel
     @Environment(\.dismiss) private var dismiss
+    private let fileService = FileManagerService.shared
     
     var body: some View {
         NavigationStack {
@@ -18,6 +19,8 @@ struct ImportOptionsView: View {
                                     libraryVM.showingImportPicker = true
                                 case .folder:
                                     libraryVM.showingFolderPicker = true
+                                case .wifiUpload:
+                                    libraryVM.showingWebUpload = true
                                 }
                             }
                         } label: {
@@ -43,7 +46,7 @@ struct ImportOptionsView: View {
                 } header: {
                     Text("Choose Import Source")
                 } footer: {
-                    Text("MP3 files will be copied to the app's document storage. Original files remain unchanged.")
+                    Text("Imported and edited MP3 files are saved to \(fileService.editedFilesDisplayLocation). Files uploaded from Wi-Fi are also saved here. All future edits happen on this managed copy. Your original files are never modified.")
                 }
                 
                 Section("Supported Formats") {

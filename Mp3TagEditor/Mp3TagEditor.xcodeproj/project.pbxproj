@@ -7,25 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000000000000000000001 /* Mp3TagEditorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001; };
-		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002; };
-		A10000000000000000000003 /* ID3Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003; };
-		A10000000000000000000004 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004; };
-		A10000000000000000000005 /* MP3File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005; };
-		A10000000000000000000006 /* FileManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006; };
-		A10000000000000000000007 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007; };
-		A10000000000000000000008 /* HapticAndImageServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008; };
-		A10000000000000000000009 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009; };
-		A10000000000000000000010 /* TagEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010; };
-		A10000000000000000000011 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011; };
-		A10000000000000000000012 /* MP3FileRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012; };
-		A10000000000000000000013 /* ImportOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013; };
-		A10000000000000000000014 /* TagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014; };
-		A10000000000000000000015 /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015; };
-		A10000000000000000000016 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016; };
-		A10000000000000000000017 /* BatchEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017; };
-		A10000000000000000000018 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018; };
-		A10000000000000000000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019; };
+		A10000000000000000000001 /* Mp3TagEditorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* Mp3TagEditorApp.swift */; };
+		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* ContentView.swift */; };
+		A10000000000000000000003 /* ID3Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* ID3Parser.swift */; };
+		A10000000000000000000004 /* Genre.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* Genre.swift */; };
+		A10000000000000000000005 /* MP3File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* MP3File.swift */; };
+		A10000000000000000000006 /* FileManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* FileManagerService.swift */; };
+		A10000000000000000000007 /* AudioPlayerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* AudioPlayerService.swift */; };
+		A10000000000000000000008 /* HapticAndImageServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* HapticAndImageServices.swift */; };
+		A10000000000000000000009 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* LibraryViewModel.swift */; };
+		A10000000000000000000010 /* TagEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* TagEditorViewModel.swift */; };
+		A10000000000000000000011 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* LibraryView.swift */; };
+		A10000000000000000000012 /* MP3FileRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* MP3FileRow.swift */; };
+		A10000000000000000000013 /* ImportOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* ImportOptionsView.swift */; };
+		A10000000000000000000014 /* TagEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* TagEditorView.swift */; };
+		A10000000000000000000015 /* GenrePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* GenrePickerView.swift */; };
+		A10000000000000000000016 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* MiniPlayerView.swift */; };
+		A10000000000000000000017 /* BatchEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* BatchEditView.swift */; };
+		A10000000000000000000018 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* Extensions.swift */; };
+		A10000000000000000000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* Assets.xcassets */; };
+		A10000000000000000000020 /* RecentEditsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* RecentEditsView.swift */; };
+		A10000000000000000000021 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* SettingsView.swift */; };
+		A10000000000000000000022 /* WebServerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000023 /* WebServerService.swift */; };
+		A10000000000000000000023 /* WebUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000024 /* WebUploadView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,7 +52,11 @@
 		B10000000000000000000017 /* BatchEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchEditView.swift; sourceTree = "<group>"; };
 		B10000000000000000000018 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		B10000000000000000000019 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B10000000000000000000020 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B10000000000000000000020 /* App/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = App/Info.plist; sourceTree = "<group>"; };
+		B10000000000000000000021 /* RecentEditsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentEditsView.swift; sourceTree = "<group>"; };
+		B10000000000000000000022 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10000000000000000000023 /* WebServerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServerService.swift; sourceTree = "<group>"; };
+		B10000000000000000000024 /* WebUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebUploadView.swift; sourceTree = "<group>"; };
 		C10000000000000000000001 /* Mp3TagEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mp3TagEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,14 +79,6 @@
 			);
 			sourceTree = "<group>";
 		};
-		E10000000000000000000099 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C10000000000000000000001 /* Mp3TagEditor.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		E10000000000000000000002 /* Mp3TagEditor */ = {
 			isa = PBXGroup;
 			children = (
@@ -89,7 +89,7 @@
 				E10000000000000000000007 /* Views */,
 				E10000000000000000000013 /* Extensions */,
 				B10000000000000000000019 /* Assets.xcassets */,
-				B10000000000000000000020 /* Info.plist */,
+				B10000000000000000000020 /* App/Info.plist */,
 			);
 			path = Mp3TagEditor;
 			sourceTree = "<group>";
@@ -119,6 +119,7 @@
 				B10000000000000000000006 /* FileManagerService.swift */,
 				B10000000000000000000007 /* AudioPlayerService.swift */,
 				B10000000000000000000008 /* HapticAndImageServices.swift */,
+				B10000000000000000000023 /* WebServerService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -139,6 +140,8 @@
 				E10000000000000000000009 /* Editor */,
 				E10000000000000000000010 /* Player */,
 				E10000000000000000000011 /* BatchEdit */,
+				B10000000000000000000021 /* RecentEditsView.swift */,
+				B10000000000000000000022 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -149,6 +152,7 @@
 				B10000000000000000000011 /* LibraryView.swift */,
 				B10000000000000000000012 /* MP3FileRow.swift */,
 				B10000000000000000000013 /* ImportOptionsView.swift */,
+				B10000000000000000000024 /* WebUploadView.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -184,6 +188,14 @@
 				B10000000000000000000018 /* Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		E10000000000000000000099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10000000000000000000001 /* Mp3TagEditor.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +285,10 @@
 				A10000000000000000000016 /* MiniPlayerView.swift in Sources */,
 				A10000000000000000000017 /* BatchEditView.swift in Sources */,
 				A10000000000000000000018 /* Extensions.swift in Sources */,
+				A10000000000000000000020 /* RecentEditsView.swift in Sources */,
+				A10000000000000000000021 /* SettingsView.swift in Sources */,
+				A10000000000000000000022 /* WebServerService.swift in Sources */,
+				A10000000000000000000023 /* WebUploadView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,9 +421,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7XX79G3QMT;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Mp3TagEditor/Info.plist;
+				INFOPLIST_FILE = Mp3TagEditor/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "MP3 Tag Editor";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -437,9 +453,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7XX79G3QMT;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Mp3TagEditor/Info.plist;
+				INFOPLIST_FILE = Mp3TagEditor/App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "MP3 Tag Editor";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -465,15 +481,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F10000000000000000000020 /* Build configuration list for PBXProject "Mp3TagEditor" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				G10000000000000000000001 /* Debug */,
-				G10000000000000000000002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		F10000000000000000000010 /* Build configuration list for PBXNativeTarget "Mp3TagEditor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -483,8 +490,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		F10000000000000000000020 /* Build configuration list for PBXProject "Mp3TagEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G10000000000000000000001 /* Debug */,
+				G10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = F10000000000000000000099 /* Project object */;
 }

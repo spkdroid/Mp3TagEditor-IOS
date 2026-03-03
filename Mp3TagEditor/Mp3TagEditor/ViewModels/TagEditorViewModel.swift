@@ -30,6 +30,8 @@ final class TagEditorViewModel: ObservableObject {
     @Published var showingPhotoPicker: Bool = false
     @Published var showingArtOptions: Bool = false
     @Published var selectedPhotoItem: PhotosPickerItem?
+    @Published var photoPickerError: String?
+    @Published var showPhotoPickerError: Bool = false
     
     // State
     @Published var hasChanges: Bool = false
@@ -37,8 +39,11 @@ final class TagEditorViewModel: ObservableObject {
     @Published var saveError: String?
     @Published var showSaveError: Bool = false
     @Published var showSaveSuccess: Bool = false
+    @Published var savedFileName: String = ""
     @Published var showingDiscardAlert: Bool = false
     @Published var showingAdvancedFields: Bool = false
+
+    let editedFilesLocationText = FileManagerService.shared.editedFilesDisplayLocation
     
     let file: MP3File
     private let originalTag: ID3Tag
@@ -133,6 +138,7 @@ final class TagEditorViewModel: ObservableObject {
     
     func handlePhotoSelection() async {
         guard let item = selectedPhotoItem else { return }
+        defer { selectedPhotoItem = nil }
         
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
@@ -144,11 +150,18 @@ final class TagEditorViewModel: ObservableObject {
                         albumArtImage = UIImage(data: compressed)
                         checkForChanges()
                         HapticManager.shared.notification(.success)
+                        return
                     }
                 }
             }
+
+            photoPickerError = "The selected photo could not be processed. Please choose a different image."
+            showPhotoPickerError = true
+            HapticManager.shared.notification(.error)
         } catch {
-            print("Failed to load photo: \(error)")
+            photoPickerError = "Failed to load photo: \(error.localizedDescription)"
+            showPhotoPickerError = true
+            HapticManager.shared.notification(.error)
         }
     }
     
@@ -167,19 +180,8 @@ final class TagEditorViewModel: ObservableObject {
         Task {
             do {
                 let tag = currentTag
-                try libraryVM.saveTags(for: file, newTag: tag)
-                
-                // Record edit history
-                for fieldName in changedFields {
-                    let entry = EditHistoryEntry(
-                        fileId: file.id,
-                        fileName: file.fileName,
-                        fieldName: fieldName,
-                        oldValue: getOriginalValue(for: fieldName),
-                        newValue: getCurrentValue(for: fieldName)
-                    )
-                    libraryVM.addEditHistory(entry: entry)
-                }
+                let updatedFile = try libraryVM.saveTags(for: file, newTag: tag)
+                savedFileName = updatedFile.fileName
                 
                 isSaving = false
                 hasChanges = false
@@ -187,7 +189,7 @@ final class TagEditorViewModel: ObservableObject {
                 HapticManager.shared.notification(.success)
                 
                 // Auto-dismiss success after delay
-                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                try? await Task.sleep(nanoseconds: 20_000_000_000)
                 showSaveSuccess = false
             } catch {
                 isSaving = false

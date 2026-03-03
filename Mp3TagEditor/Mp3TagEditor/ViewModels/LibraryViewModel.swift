@@ -13,6 +13,7 @@ final class LibraryViewModel: ObservableObject {
     @Published var loadingMessage: String = ""
     @Published var showingImportPicker: Bool = false
     @Published var showingFolderPicker: Bool = false
+    @Published var showingWebUpload: Bool = false
     @Published var showingBatchEdit: Bool = false
     @Published var selectedFiles: Set<UUID> = Set()
     @Published var isSelectionMode: Bool = false
@@ -81,13 +82,11 @@ final class LibraryViewModel: ObservableObject {
     }
     
     var recentlyEdited: [MP3File] {
-        let recentFileIds = Set(editHistory.prefix(50).map { $0.fileId })
-        return files.filter { recentFileIds.contains($0.id) }
-            .sorted { a, b in
-                let aDate = editHistory.first { $0.fileId == a.id }?.editDate ?? .distantPast
-                let bDate = editHistory.first { $0.fileId == b.id }?.editDate ?? .distantPast
-                return aDate > bDate
-            }
+        files
+            .filter { fileService.isInEditedFilesDirectory($0.url) }
+            .sorted { $0.dateModified > $1.dateModified }
+            .prefix(50)
+            .map { $0 }
     }
     
     var uniqueGenres: [String] {
@@ -122,35 +121,7 @@ final class LibraryViewModel: ObservableObject {
         loadingMessage = "Importing files..."
         
         Task {
-            var imported: [MP3File] = []
-            
-            for (index, url) in urls.enumerated() {
-                loadingMessage = "Importing \(index + 1) of \(urls.count)..."
-                
-                do {
-                    let accessing = url.startAccessingSecurityScopedResource()
-                    defer {
-                        if accessing {
-                            url.stopAccessingSecurityScopedResource()
-                        }
-                    }
-                    
-                    // Copy to app documents
-                    let localURL = try fileService.importFile(from: url)
-                    let file = try MP3File.create(from: localURL)
-                    imported.append(file)
-                } catch {
-                    print("Failed to import \(url.lastPathComponent): \(error)")
-                }
-            }
-            
-            files.append(contentsOf: imported)
-            saveLibrary()
-            
-            isLoading = false
-            loadingMessage = ""
-            
-            HapticManager.shared.notification(.success)
+            await importFilesTask(urls: urls)
         }
     }
     
@@ -160,12 +131,89 @@ final class LibraryViewModel: ObservableObject {
         
         Task {
             do {
-                let mp3URLs = try fileService.scanDirectory(url)
-                importFiles(urls: mp3URLs)
+                let accessing = url.startAccessingSecurityScopedResource()
+                defer {
+                    if accessing {
+                        url.stopAccessingSecurityScopedResource()
+                    }
+                }
+
+                let candidateURLs = try fileService.scanDirectory(url)
+
+                guard !candidateURLs.isEmpty else {
+                    showError(message: "No files found in the selected folder.")
+                    isLoading = false
+                    loadingMessage = ""
+                    return
+                }
+
+                await importFilesTask(urls: candidateURLs)
             } catch {
                 showError(message: "Failed to scan folder: \(error.localizedDescription)")
                 isLoading = false
+                loadingMessage = ""
             }
+        }
+    }
+
+    func importManagedFile(at url: URL) {
+        Task {
+            do {
+                let importedFile = try MP3File.create(from: url)
+
+                if let index = files.firstIndex(where: { $0.url.standardizedFileURL == url.standardizedFileURL }) {
+                    files[index] = importedFile
+                } else {
+                    files.append(importedFile)
+                }
+
+                saveLibrary()
+                HapticManager.shared.notification(.success)
+            } catch {
+                showError(message: "Uploaded file could not be imported: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func importFilesTask(urls: [URL]) async {
+        var imported: [MP3File] = []
+
+        for (index, url) in urls.enumerated() {
+            loadingMessage = "Importing \(index + 1) of \(urls.count)..."
+
+            do {
+                let accessing = url.startAccessingSecurityScopedResource()
+                defer {
+                    if accessing {
+                        url.stopAccessingSecurityScopedResource()
+                    }
+                }
+
+                // Copy to app documents
+                let localURL = try fileService.importFile(from: url)
+                do {
+                    let file = try MP3File.create(from: localURL)
+                    imported.append(file)
+                } catch {
+                    // Remove copied files that are not valid MP3s (or cannot be parsed).
+                    try? fileService.deleteFile(at: localURL)
+                }
+            } catch {
+                print("Failed to import \(url.lastPathComponent): \(error)")
+            }
+        }
+
+        files.append(contentsOf: imported)
+        saveLibrary()
+
+        isLoading = false
+        loadingMessage = ""
+
+        if imported.isEmpty {
+            showError(message: "No valid MP3 files were imported from the selected folder.")
+            HapticManager.shared.notification(.error)
+        } else {
+            HapticManager.shared.notification(.success)
         }
     }
     
@@ -200,22 +248,42 @@ final class LibraryViewModel: ObservableObject {
     
     // MARK: - Tag Operations
     
-    func saveTags(for file: MP3File, newTag: ID3Tag) throws {
+    func saveTags(for file: MP3File, newTag: ID3Tag) throws -> MP3File {
         let accessing = file.url.startAccessingSecurityScopedResource()
         defer {
             if accessing {
                 file.url.stopAccessingSecurityScopedResource()
             }
         }
-        
-        try ID3Parser.write(tag: newTag, to: file.url)
-        
-        var updatedFile = file
-        updatedFile.tag = newTag
-        updatedFile.dateModified = Date()
+
+        let editableURL = try fileService.makeManagedCopyIfNeeded(from: file.url)
+        try ID3Parser.write(tag: newTag, to: editableURL)
+
+        let updatedSize = fileService.fileSize(at: editableURL)
+        let updatedFile = MP3File(
+            id: file.id,
+            url: editableURL,
+            fileName: editableURL.lastPathComponent,
+            fileSize: updatedSize,
+            dateAdded: file.dateAdded,
+            dateModified: Date(),
+            tag: newTag,
+            bookmarkData: file.bookmarkData
+        )
         updateFile(updatedFile)
+
+        addEditHistory(
+            entry: EditHistoryEntry(
+                fileId: updatedFile.id,
+                fileName: updatedFile.fileName,
+                fieldName: "Edited",
+                oldValue: nil,
+                newValue: nil
+            )
+        )
         
         HapticManager.shared.notification(.success)
+        return updatedFile
     }
     
     func addEditHistory(entry: EditHistoryEntry) {
@@ -247,7 +315,7 @@ final class LibraryViewModel: ObservableObject {
                 }
             }
             
-            try saveTags(for: file, newTag: newTag)
+            _ = try saveTags(for: file, newTag: newTag)
         }
     }
     
@@ -259,7 +327,7 @@ final class LibraryViewModel: ObservableObject {
             var newTag = file.tag
             newTag.albumArtData = imageData
             newTag.albumArtMimeType = mimeType
-            try saveTags(for: file, newTag: newTag)
+            _ = try saveTags(for: file, newTag: newTag)
         }
     }
     

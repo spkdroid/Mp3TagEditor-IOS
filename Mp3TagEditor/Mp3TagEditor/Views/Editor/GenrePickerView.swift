@@ -158,7 +158,9 @@ struct CategoryChip: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(name)
                 .font(.caption.weight(.medium))
                 .padding(.horizontal, 14)
@@ -180,7 +182,9 @@ struct GenreChip: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(name)
                 .font(.caption)
                 .lineLimit(1)
@@ -196,9 +200,9 @@ struct GenreChip: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(isSelected ? .tint : .clear, lineWidth: 1.5)
+                        .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 1.5)
                 )
-                .foregroundStyle(isSelected ? .tint : .primary)
+                .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
         }
         .buttonStyle(.plain)
     }

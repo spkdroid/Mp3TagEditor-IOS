@@ -24,7 +24,7 @@ struct ID3GenreList {
         "Booty Bass", "Primus", "Porn Groove", "Satire", "Slow Jam", "Club",
         "Tango", "Samba", "Folklore", "Ballad", "Power Ballad", "Rhythmic Soul",
         "Freestyle", "Duet", "Punk Rock", "Drum Solo", "A Capella", "Euro-House",
-        "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore "Techno",
+        "Dance Hall", "Goa", "Drum & Bass", "Club-House", "Hardcore Techno",
         "Terror", "Indie", "BritPop", "Afro-Punk", "Polsk Punk", "Beat",
         "Christian Gangsta Rap", "Heavy Metal", "Black Metal", "Crossover",
         "Contemporary Christian", "Christian Rock", "Merengue", "Salsa",

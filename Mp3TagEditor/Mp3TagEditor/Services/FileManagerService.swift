@@ -23,6 +23,16 @@ final class FileManagerService {
         try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
+
+    var editedFilesDirectory: URL {
+        let url = documentsDirectory.appendingPathComponent("Edited MP3 Files", isDirectory: true)
+        try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }
+
+    var editedFilesDisplayLocation: String {
+        "On My iPhone > Mp3TagEditor > Edited MP3 Files"
+    }
     
     // MARK: - File Import
     
@@ -34,7 +44,7 @@ final class FileManagerService {
             }
         }
         
-        let destURL = documentsDirectory.appendingPathComponent(sourceURL.lastPathComponent)
+        let destURL = editedFilesDirectory.appendingPathComponent(sourceURL.lastPathComponent)
         
         // If file already exists, create unique name
         let finalURL = uniqueURL(for: destURL)
@@ -46,6 +56,20 @@ final class FileManagerService {
     
     func importFiles(from sourceURLs: [URL]) throws -> [URL] {
         return try sourceURLs.map { try importFile(from: $0) }
+    }
+
+    func isInEditedFilesDirectory(_ url: URL) -> Bool {
+        url.standardizedFileURL.path.hasPrefix(editedFilesDirectory.standardizedFileURL.path)
+    }
+
+    func makeManagedCopyIfNeeded(from sourceURL: URL) throws -> URL {
+        if isInEditedFilesDirectory(sourceURL) {
+            return sourceURL
+        }
+
+        let destination = uniqueURL(for: editedFilesDirectory.appendingPathComponent(sourceURL.lastPathComponent))
+        try fileManager.copyItem(at: sourceURL, to: destination)
+        return destination
     }
     
     // MARK: - File Operations
@@ -142,20 +166,39 @@ final class FileManagerService {
     // MARK: - Scan Directory for MP3s
     
     func scanDirectory(_ url: URL) throws -> [URL] {
-        let accessing = url.startAccessingSecurityScopedResource()
-        defer {
-            if accessing {
-                url.stopAccessingSecurityScopedResource()
-            }
+        // Some File Provider sources (iCloud/third-party providers) may not reliably
+        // expose file extension/content type metadata during enumeration.
+        // Return all non-directory candidates and let parsing validate MP3 files.
+        if url.hasDirectoryPath == false {
+            return [url]
         }
-        
-        let contents = try fileManager.contentsOfDirectory(
+
+        guard let enumerator = fileManager.enumerator(
             at: url,
-            includingPropertiesForKeys: [.fileSizeKey, .isRegularFileKey],
-            options: [.skipsHiddenFiles]
-        )
-        
-        return contents.filter { $0.pathExtension.lowercased() == "mp3" }
+            includingPropertiesForKeys: [.isRegularFileKey, .isDirectoryKey, .contentTypeKey],
+            options: [.skipsHiddenFiles],
+            errorHandler: { _, _ in true }
+        ) else {
+            throw NSError(
+                domain: "FileManagerService",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Could not read the selected folder."]
+            )
+        }
+
+        var mp3URLs: [URL] = []
+
+        for case let itemURL as URL in enumerator {
+            let values = try? itemURL.resourceValues(forKeys: [.isDirectoryKey])
+
+            if values?.isDirectory == true {
+                continue
+            }
+
+            mp3URLs.append(itemURL)
+        }
+
+        return mp3URLs
     }
     
     // MARK: - Helpers

@@ -8,6 +8,7 @@ struct TagEditorView: View {
     @EnvironmentObject private var libraryVM: LibraryViewModel
     @EnvironmentObject private var playerService: AudioPlayerService
     @Environment(\.dismiss) private var dismiss
+    private let fileService = FileManagerService.shared
     
     init(file: MP3File) {
         self.file = file
@@ -15,53 +16,24 @@ struct TagEditorView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Album Art Section
-                albumArtSection
-                
-                // Playback Controls
-                playbackSection
-                
-                // Primary Fields
-                primaryFieldsSection
-                
-                // Additional Fields
-                additionalFieldsSection
-                
-                // Advanced Fields
-                advancedFieldsSection
-                
-                // File Info
-                fileInfoSection
-                
-                // Actions
-                actionsSection
-                
-                // Spacer for mini player
-                if playerService.currentFile != nil {
-                    Spacer().frame(height: 80)
-                }
-            }
-            .padding()
-        }
+        ScrollView { editorContent }
         .navigationTitle("Edit Tags")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { editorToolbar }
-        .onChange(of: viewModel.title) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.artist) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.album) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.year) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.genre) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.trackNumber) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.discNumber) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.composer) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.albumArtist) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.comment) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.lyrics) { viewModel.checkForChanges() }
-        .onChange(of: viewModel.bpm) { viewModel.checkForChanges() }
+        .photosPicker(
+            isPresented: $viewModel.showingPhotoPicker,
+            selection: $viewModel.selectedPhotoItem,
+            matching: .images,
+            preferredItemEncoding: .current
+        )
+        .modifier(FieldChangeObserver(viewModel: viewModel))
         .onChange(of: viewModel.selectedPhotoItem) {
             Task { await viewModel.handlePhotoSelection() }
+        }
+        .alert("Photo Import Failed", isPresented: $viewModel.showPhotoPickerError) {
+            Button("OK") { }
+        } message: {
+            Text(viewModel.photoPickerError ?? "Unable to load selected photo.")
         }
         .alert("Save Failed", isPresented: $viewModel.showSaveError) {
             Button("OK") { }
@@ -74,14 +46,76 @@ struct TagEditorView: View {
         } message: {
             Text("You have unsaved changes. Are you sure you want to discard them?")
         }
-        .overlay(alignment: .bottom) {
+        .overlay {
             if viewModel.showSaveSuccess {
-                saveSuccessBanner
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                ZStack {
+                    Color.black.opacity(0.35)
+                        .ignoresSafeArea()
+
+                    saveSuccessBanner
+                        .padding(.horizontal, 24)
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                viewModel.showSaveSuccess = false
+                            }
+                        }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.98)))
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: viewModel.showSaveSuccess)
         .interactiveDismissDisabled(viewModel.hasChanges)
+    }
+
+    private var editorContent: some View {
+        VStack(spacing: 20) {
+            // Album Art Section
+            albumArtSection
+
+            // Playback Controls
+            playbackSection
+
+            // Primary Fields
+            primaryFieldsSection
+
+            // Additional Fields
+            additionalFieldsSection
+
+            // Advanced Fields
+            advancedFieldsSection
+
+            // File Info
+            fileInfoSection
+
+            // Actions
+            actionsSection
+
+            // Spacer for mini player
+            if playerService.currentFile != nil {
+                Spacer().frame(height: 80)
+            }
+        }
+        .padding()
+    }
+
+    private struct FieldChangeObserver: ViewModifier {
+        @ObservedObject var viewModel: TagEditorViewModel
+
+        func body(content: Content) -> some View {
+            content
+                .onChange(of: viewModel.title) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.artist) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.album) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.year) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.genre) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.trackNumber) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.discNumber) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.composer) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.albumArtist) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.comment) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.lyrics) { viewModel.checkForChanges() }
+                .onChange(of: viewModel.bpm) { viewModel.checkForChanges() }
+        }
     }
     
     // MARK: - Album Art Section
@@ -146,9 +180,8 @@ struct TagEditorView: View {
                 .foregroundStyle(.tint)
         }
         .confirmationDialog("Album Artwork", isPresented: $viewModel.showingArtOptions) {
-            PhotosPicker(selection: $viewModel.selectedPhotoItem,
-                        matching: .images) {
-                Text("Choose from Photos")
+            Button("Choose from Photos") {
+                viewModel.showingPhotoPicker = true
             }
             
             if viewModel.albumArtImage != nil {
@@ -290,9 +323,15 @@ struct TagEditorView: View {
                 InfoRow(label: "File Size", value: file.fileSizeFormatted)
                 InfoRow(label: "Tag Version", value: file.tag.version.rawValue)
                 InfoRow(label: "Last Modified", value: file.dateModified.formatted(date: .abbreviated, time: .shortened))
+                InfoRow(label: "Saved In", value: fileService.editedFilesDisplayLocation)
             }
             .padding(14)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+
+            Text("Edits are applied to the managed copy shown above. The original imported file is kept untouched.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 4)
         }
     }
     
@@ -355,17 +394,66 @@ struct TagEditorView: View {
     // MARK: - Save Success Banner
     
     private var saveSuccessBanner: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-            Text("Tags saved successfully!")
-                .font(.subheadline.weight(.medium))
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(.green.opacity(0.15))
+                        .frame(width: 42, height: 42)
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.title3)
+                        .foregroundStyle(.green)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Saved Successfully")
+                        .font(.headline)
+                    Text("Your edits are now on a managed copy")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            VStack(spacing: 10) {
+                HStack {
+                    Text("New File")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(viewModel.savedFileName)
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(1)
+                }
+
+                Divider()
+
+                HStack(alignment: .top) {
+                    Text("Saved To")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(viewModel.editedFilesLocationText)
+                        .font(.caption.weight(.semibold))
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+            .padding(12)
+            .background(.black.opacity(0.08), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            Text("Original file remains untouched. This dialog closes automatically in 20 seconds.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(.regularMaterial, in: Capsule())
-        .shadow(color: .black.opacity(0.15), radius: 8, y: 4)
-        .padding(.bottom, 16)
+        .padding(18)
+        .frame(maxWidth: 460)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(.white.opacity(0.2), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.24), radius: 20, y: 10)
     }
     
     // MARK: - Toolbar
